@@ -3,1096 +3,968 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0b57d0">
   <title>115年度高雄軟體園區CEO聯誼會－連續掃碼報到</title>
-
-  <!-- QR 掃描函式庫：html5-qrcode v2.3.8 -->
+ 
+  <!-- html5-qrcode：GitHub Pages 外部 HTTPS 頁使用相機掃描 -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-
+ 
   <style>
-    :root {
-      --primary: #0b57d0;
-      --primary-dark: #0842a0;
-      --success: #137333;
-      --success-bg: #e6f4ea;
-      --warning: #b06000;
-      --warning-bg: #fef7e0;
-      --danger: #b3261e;
-      --danger-bg: #fce8e6;
-      --surface: #ffffff;
-      --background: #f3f6fa;
-      --text: #202124;
-      --muted: #5f6368;
-      --border: #d9dde3;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
+    * { box-sizing: border-box; }
+ 
     body {
       margin: 0;
-      min-height: 100%;
-      background: var(--background);
-      color: var(--text);
+      padding: 14px;
+      background: #f4f6f8;
+      color: #222;
       font-family: Arial, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
     }
-
-    body {
-      padding:
-        max(14px, env(safe-area-inset-top))
-        max(14px, env(safe-area-inset-right))
-        max(18px, env(safe-area-inset-bottom))
-        max(14px, env(safe-area-inset-left));
-    }
-
-    .app {
-      width: min(760px, 100%);
+ 
+    .container {
+      max-width: 760px;
       margin: 0 auto;
     }
-
-    .header {
+ 
+    h1 {
+      margin: 0 0 4px;
+      font-size: 24px;
+      line-height: 1.4;
+    }
+ 
+    .subtitle {
+      color: #666;
       margin-bottom: 14px;
     }
-
-    .header h1 {
-      margin: 0;
-      font-size: clamp(22px, 5vw, 30px);
-      line-height: 1.35;
+ 
+    .connection {
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-weight: 700;
+      background: #fef7e0;
     }
-
-    .header p {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 15px;
+ 
+    .connection.ok { background: #e6f4ea; }
+    .connection.error { background: #fce8e6; }
+ 
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
     }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+ 
+    .stat {
+      background: #fff;
+      padding: 12px 5px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+      font-size: 13px;
+    }
+ 
+    .stat strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 22px;
+    }
+ 
+    .panel {
+      background: #fff;
+      border-radius: 14px;
       padding: 16px;
       margin-bottom: 14px;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 10px rgba(0,0,0,.07);
     }
-
-    .card h2 {
+ 
+    .panel h2 {
       margin: 0 0 10px;
       font-size: 19px;
     }
-
+ 
     .hint {
-      margin: 8px 0 12px;
-      color: var(--muted);
-      line-height: 1.65;
-      font-size: 14px;
+      margin: 0 0 10px;
+      color: #666;
+      line-height: 1.7;
     }
-
-    label {
-      display: block;
-      margin: 10px 0 6px;
-      font-weight: 700;
-      font-size: 14px;
-    }
-
-    input,
+ 
+    button,
     select,
-    button {
+    input {
       width: 100%;
       min-height: 48px;
       border-radius: 10px;
       font-size: 16px;
     }
-
-    input,
-    select {
-      padding: 10px 12px;
-      border: 1px solid #aeb4bd;
-      background: #fff;
-      color: var(--text);
-    }
-
+ 
     button {
       border: 0;
-      padding: 11px 14px;
-      margin-top: 10px;
-      background: var(--primary);
+      background: #1a73e8;
       color: #fff;
       font-weight: 800;
+      padding: 12px;
       cursor: pointer;
+      margin-top: 8px;
     }
-
-    button:active {
-      transform: translateY(1px);
+ 
+    button.secondary { background: #5f6368; }
+    button.success { background: #188038; }
+    button.warning { background: #b06000; }
+    button:disabled { opacity: .5; cursor: default; }
+ 
+    input,
+    select {
+      border: 1px solid #aaa;
+      background: #fff;
+      padding: 10px 12px;
+      margin-top: 8px;
     }
-
-    button.secondary {
-      background: #5f6368;
-    }
-
-    button.success-button {
-      background: var(--success);
-    }
-
-    button:disabled {
-      opacity: 0.55;
-      cursor: default;
-    }
-
-    .button-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
+ 
     #reader {
       width: 100%;
       overflow: hidden;
-      border-radius: 14px;
+      border-radius: 12px;
       background: #111;
       min-height: 260px;
     }
-
+ 
     #reader video {
-      border-radius: 14px;
+      border-radius: 12px;
     }
-
-    .scanner-message {
+ 
+    .scan-status {
       margin-top: 10px;
-      padding: 10px 12px;
+      padding: 12px;
       border-radius: 10px;
       background: #eef3fd;
-      color: #174ea6;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .status-dot {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #9aa0a6;
-      margin-right: 6px;
-    }
-
-    .status-dot.on {
-      background: #34a853;
-    }
-
-    .manual-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 8px;
-      align-items: end;
-    }
-
-    .manual-row button {
-      width: auto;
-      min-width: 110px;
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.78);
-    }
-
-    .overlay.show {
-      display: flex;
-    }
-
-    .result-panel {
-      width: min(680px, 100%);
-      border-radius: 22px;
-      padding: 24px 18px;
-      text-align: center;
-      background: #fff;
-      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.35);
-    }
-
-    .result-panel.success {
-      border: 5px solid var(--success);
-      background: var(--success-bg);
-    }
-
-    .result-panel.warning {
-      border: 5px solid #f9ab00;
-      background: var(--warning-bg);
-    }
-
-    .result-panel.error {
-      border: 5px solid var(--danger);
-      background: var(--danger-bg);
-    }
-
-    .result-title {
-      font-size: clamp(28px, 7vw, 42px);
-      font-weight: 900;
-      margin-bottom: 10px;
-    }
-
-    .badge-label {
-      font-size: clamp(20px, 5vw, 30px);
-      font-weight: 800;
-      color: #3c4043;
-      margin-top: 10px;
-    }
-
-    .badge-number {
-      font-size: clamp(82px, 24vw, 150px);
-      line-height: 1;
-      letter-spacing: 6px;
-      font-weight: 1000;
-      color: var(--primary);
-      margin: 8px 0 16px;
-    }
-
-    .person {
-      font-size: clamp(18px, 4.6vw, 25px);
       line-height: 1.6;
-      font-weight: 700;
+      word-break: break-word;
     }
-
-    .person .company {
-      font-size: clamp(18px, 4.2vw, 23px);
-      margin-bottom: 5px;
+ 
+    .result {
+      display: none;
+      padding: 18px;
+      margin-bottom: 14px;
+      border-radius: 14px;
+      text-align: center;
     }
-
-    .result-time {
-      margin-top: 8px;
-      color: var(--muted);
+ 
+    .result.success-result {
+      display: block;
+      background: #e6f4ea;
+      border: 2px solid #34a853;
+    }
+ 
+    .result.warning-result {
+      display: block;
+      background: #fef7e0;
+      border: 2px solid #f9ab00;
+    }
+ 
+    .result.error-result {
+      display: block;
+      background: #fce8e6;
+      border: 2px solid #d93025;
+    }
+ 
+    .result-title {
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+ 
+    .badge-card {
+      background: #fff;
+      border: 4px solid #1a73e8;
+      border-radius: 18px;
+      padding: 14px;
+      margin: 12px 0 16px;
+    }
+ 
+    .badge-label {
+      font-size: 19px;
+      font-weight: 800;
+      color: #555;
+    }
+ 
+    .badge-number {
+      font-size: clamp(72px, 24vw, 130px);
+      line-height: 1;
+      color: #1a73e8;
+      font-weight: 1000;
+      letter-spacing: 5px;
+      margin: 8px 0;
+    }
+ 
+    .person {
+      line-height: 1.8;
+      font-size: 17px;
+      text-align: left;
+    }
+ 
+    .person-name {
+      font-size: 22px;
+      font-weight: 900;
+    }
+ 
+    .search-item {
+      padding: 14px 0;
+      border-bottom: 1px solid #eee;
+    }
+ 
+    .search-item:last-child { border-bottom: 0; }
+ 
+    .company {
+      font-weight: 800;
+      font-size: 17px;
+    }
+ 
+    .detail {
+      color: #555;
+      line-height: 1.6;
+      margin-top: 3px;
+    }
+ 
+    .mini-btn {
+      width: auto;
+      min-height: 40px;
+      padding: 8px 16px;
       font-size: 15px;
     }
-
-    .result-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 16px;
+ 
+    .already {
+      margin-top: 7px;
+      color: #b06000;
+      font-weight: 800;
     }
-
-    .small-note {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.55;
+ 
+    .footer {
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+      padding: 8px 0 18px;
     }
-
-    .hidden {
-      display: none !important;
-    }
-
+ 
     @media (max-width: 520px) {
-      .button-row,
-      .result-actions {
-        grid-template-columns: 1fr;
-      }
-
-      .manual-row {
-        grid-template-columns: 1fr;
-      }
-
-      .manual-row button {
-        width: 100%;
-      }
+      .dashboard { grid-template-columns: repeat(2, 1fr); }
+      h1 { font-size: 21px; }
     }
   </style>
 </head>
-
+ 
 <body>
-  <div class="app">
-    <div class="header">
-      <h1>115年度高雄軟體園區CEO聯誼會</h1>
-      <p>工作人員專用｜同一頁連續掃碼報到</p>
-    </div>
-
-    <!-- 第一次設定 Apps Script 後端網址 -->
-    <section class="card" id="setupCard">
-      <h2>① 設定報到後端</h2>
-      <p class="hint">
-        第一次使用時，貼上 Apps Script「正式部署」的 /exec 網址。手機會記住，之後不用再輸入。
-      </p>
-
-      <label for="apiUrl">Apps Script Web App /exec 網址</label>
-      <input
-        id="apiUrl"
-        type="url"
-        inputmode="url"
-        autocomplete="off"
-        placeholder="https://script.google.com/macros/s/......../exec"
-      >
-
-      <button type="button" onclick="saveApiUrl()">
-        儲存後端網址
-      </button>
-    </section>
-
-    <!-- 語音設定 -->
-    <section class="card">
-      <h2>② 語音與相機</h2>
-
-      <label for="voiceSelect">中文語音</label>
-      <select id="voiceSelect"></select>
-
-      <p class="hint">
-        建議活動開始前，先選擇手機中聽起來最清楚的台灣中文女聲，再按一次「啟用相機＋測試語音」。
-      </p>
-
-      <button
-        id="startButton"
-        type="button"
-        class="success-button"
-        onclick="startSystem()"
-      >
-        📷 啟用相機＋🔊 測試報到語音
-      </button>
-
-      <div class="button-row">
-        <button
-          id="stopButton"
-          type="button"
-          class="secondary"
-          onclick="stopScanner()"
-          disabled
-        >
-          停止相機
-        </button>
-
-        <button
-          type="button"
-          class="secondary"
-          onclick="testVoice()"
-        >
-          🔊 再測試一次語音
-        </button>
-      </div>
-
-      <p class="small-note">
-        語音音量由手機「媒體音量」控制，請在活動開始前調高。
-      </p>
-    </section>
-
-    <!-- 連續掃描 -->
-    <section class="card">
-      <h2>③ 連續掃描 QR Code</h2>
-
-      <div id="reader"></div>
-
-      <div class="scanner-message" id="scannerMessage">
-        <span class="status-dot" id="scannerDot"></span>
-        尚未啟用相機
-      </div>
-
-      <p class="hint">
-        相機啟用後保持此頁開啟。每次掃描成功會暫停約 2.5 秒，顯示名牌編號並播報，再自動繼續掃下一位。
-      </p>
-    </section>
-
-    <!-- 備援：手動輸入報到碼 -->
-    <section class="card">
-      <h2>備援｜手動輸入報到碼</h2>
-
-      <div class="manual-row">
-        <div>
-          <label for="manualCode">報到碼</label>
-          <input
-            id="manualCode"
-            type="text"
-            autocomplete="off"
-            placeholder="CEO2026-..."
-          >
-        </div>
-
-        <button
-          type="button"
-          onclick="manualCheckin()"
-        >
-          確認報到
-        </button>
-      </div>
-    </section>
+<div class="container">
+  <h1>115年度高雄軟體園區CEO聯誼會</h1>
+  <div class="subtitle">GitHub Pages－同一頁連續相機掃碼報到</div>
+ 
+  <div id="connection" class="connection">正在連線 Apps Script 控制頁…</div>
+ 
+  <div class="dashboard">
+    <div class="stat">正式報名<strong id="registered">-</strong></div>
+    <div class="stat">已報到<strong id="checkedIn">-</strong></div>
+    <div class="stat">未報到<strong id="notCheckedIn">-</strong></div>
+    <div class="stat">報到率<strong id="rate">-</strong></div>
   </div>
-
-  <!-- 報到結果覆蓋層 -->
-  <div class="overlay" id="resultOverlay" aria-live="assertive">
-    <div class="result-panel" id="resultPanel">
-      <div class="result-title" id="resultTitle">處理中</div>
-
-      <div id="badgeBlock" class="hidden">
-        <div class="badge-label">請領取名牌編號</div>
-        <div class="badge-number" id="badgeNumber">---</div>
-      </div>
-
-      <div class="person" id="personBlock"></div>
-      <div class="result-time" id="resultTime"></div>
-
-      <div class="result-actions">
-        <button
-          type="button"
-          onclick="replayLastVoice()"
-          id="replayButton"
-        >
-          🔊 再播放一次
-        </button>
-
-        <button
-          type="button"
-          class="secondary"
-          onclick="closeResultAndResume()"
-        >
-          繼續掃描
-        </button>
-      </div>
-    </div>
+ 
+  <div id="result" class="result"></div>
+ 
+  <div class="panel">
+    <h2>📷 連續掃碼＋🔊 中文語音</h2>
+    <p class="hint">活動開始前按一次「啟用相機＋測試語音」。相機會持續開啟；每次完成報到後會自動回到掃描狀態。</p>
+ 
+    <label for="voiceSelect"><strong>中文語音（請選您覺得最清楚的女聲）</strong></label>
+    <select id="voiceSelect"></select>
+ 
+    <button id="startBtn" onclick="startSystem()" disabled>📷 啟用相機＋🔊 測試報到語音</button>
+    <button id="stopBtn" class="secondary" onclick="stopScanner()" disabled>停止相機</button>
+ 
+    <div id="reader"></div>
+    <div id="scanStatus" class="scan-status">等待控制頁連線。</div>
   </div>
-
-  <!-- 用 hidden form + iframe 對 Apps Script POST，避免跨網域 CORS 問題 -->
-  <form
-    id="apiForm"
-    method="POST"
-    target="apiFrame"
-    class="hidden"
-  >
-    <input type="hidden" name="action" value="checkin">
-    <input type="hidden" name="code" id="apiCode">
-    <input type="hidden" name="requestId" id="apiRequestId">
-  </form>
-
-  <iframe
-    id="apiFrame"
-    name="apiFrame"
-    class="hidden"
-    title="Apps Script API response"
-  ></iframe>
-
-  <script>
-    'use strict';
-
-    const STORAGE_API_URL = 'ceo_checkin_api_url';
-    const STORAGE_VOICE_NAME = 'ceo_checkin_voice_name';
-    const RESULT_DISPLAY_MS = 2500;
-    const API_TIMEOUT_MS = 30000;
-    const SAME_CODE_COOLDOWN_MS = 5000;
-
-    let scanner = null;
-    let scannerRunning = false;
-    let scannerPaused = false;
-    let processing = false;
-    let voiceEnabled = false;
-    let voices = [];
-    let lastSpokenText = '';
-    let lastCode = '';
-    let lastCodeAt = 0;
-    let apiTimer = null;
-    let resumeTimer = null;
-    let pendingRequestId = '';
-
-    // ========================================================
-    // 初始化
-    // ========================================================
-
-    window.addEventListener('load', function () {
-      restoreApiUrl();
-      loadVoices();
-      updateScannerStatus(false, '尚未啟用相機');
-    });
-
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
-    }
-
-    // ========================================================
-    // Apps Script 後端網址
-    // ========================================================
-
-    function restoreApiUrl() {
-      const saved = localStorage.getItem(STORAGE_API_URL) || '';
-      document.getElementById('apiUrl').value = saved;
-    }
-
-    function saveApiUrl() {
-      const input = document.getElementById('apiUrl');
-      const url = normalizeApiUrl(input.value);
-
-      if (!url) {
-        alert('請貼上正確的 Apps Script /exec 網址。');
-        input.focus();
-        return;
-      }
-
-      localStorage.setItem(STORAGE_API_URL, url);
-      input.value = url;
-      alert('已儲存報到後端網址。');
-    }
-
-    function normalizeApiUrl(value) {
-      const url = String(value || '').trim();
-
-      if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/i.test(url)) {
-        return '';
-      }
-
-      return url.split('?')[0];
-    }
-
-    function getApiUrl() {
-      const typed = normalizeApiUrl(document.getElementById('apiUrl').value);
-      if (typed) {
-        localStorage.setItem(STORAGE_API_URL, typed);
-        return typed;
-      }
-
-      return normalizeApiUrl(localStorage.getItem(STORAGE_API_URL) || '');
-    }
-
-    // ========================================================
-    // 語音
-    // ========================================================
-
-    function loadVoices() {
-      if (!('speechSynthesis' in window)) {
-        return;
-      }
-
-      voices = window.speechSynthesis.getVoices() || [];
-
-      const select = document.getElementById('voiceSelect');
-      const oldValue = select.value;
-      const savedName = localStorage.getItem(STORAGE_VOICE_NAME) || '';
-
-      select.innerHTML = '';
-
-      const chineseVoices = voices.filter(function (voice) {
-        return String(voice.lang || '').toLowerCase().startsWith('zh');
-      });
-
-      const list = chineseVoices.length > 0 ? chineseVoices : voices;
-
-      if (list.length === 0) {
-        const option = document.createElement('option');
-        option.value = '';
-        option.textContent = '使用手機預設語音';
-        select.appendChild(option);
-        return;
-      }
-
-      list.forEach(function (voice) {
-        const option = document.createElement('option');
-        option.value = voice.name;
-        option.textContent = voice.name + ' (' + voice.lang + ')';
-        select.appendChild(option);
-      });
-
-      let preferred = '';
-
-      if (savedName && list.some(v => v.name === savedName)) {
-        preferred = savedName;
-      } else if (oldValue && list.some(v => v.name === oldValue)) {
-        preferred = oldValue;
-      } else {
-        const zhTw = list.find(function (voice) {
-          return String(voice.lang || '').replace('_', '-').toLowerCase() === 'zh-tw';
-        });
-
-        preferred = zhTw ? zhTw.name : list[0].name;
-      }
-
-      select.value = preferred;
-      localStorage.setItem(STORAGE_VOICE_NAME, preferred);
-
-      select.onchange = function () {
-        localStorage.setItem(STORAGE_VOICE_NAME, select.value);
-      };
-    }
-
-    function getSelectedVoice() {
-      const name = document.getElementById('voiceSelect').value;
-      return voices.find(v => v.name === name) || null;
-    }
-
-    function speak(text) {
-      if (!voiceEnabled || !('speechSynthesis' in window)) {
-        return;
-      }
-
-      const cleanText = String(text || '').trim();
-      if (!cleanText) {
-        return;
-      }
-
-      lastSpokenText = cleanText;
-      window.speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.lang = 'zh-TW';
-      utterance.volume = 1.0;
-      utterance.rate = 0.88;
-      utterance.pitch = 1.12;
-
-      const voice = getSelectedVoice();
-      if (voice) {
-        utterance.voice = voice;
-      }
-
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function testVoice() {
-      voiceEnabled = true;
-      speak('報到語音已啟用。請將手機媒體音量調高。');
-    }
-
-    function replayLastVoice() {
-      if (lastSpokenText) {
-        voiceEnabled = true;
-        speak(lastSpokenText);
-      }
-    }
-
-    function badgeNumberToChinese(value) {
-      const digitsOnly = String(value || '').replace(/\D/g, '');
-      const number = parseInt(digitsOnly, 10);
-
-      if (Number.isNaN(number)) {
-        return String(value || '');
-      }
-
-      const d = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
-
-      if (number < 10) {
-        return d[number];
-      }
-
-      if (number === 10) {
-        return '十';
-      }
-
-      if (number < 20) {
-        return '十' + (number % 10 === 0 ? '' : d[number % 10]);
-      }
-
-      if (number < 100) {
-        const tens = Math.floor(number / 10);
-        const ones = number % 10;
-        return d[tens] + '十' + (ones === 0 ? '' : d[ones]);
-      }
-
-      return String(number);
-    }
-
-    // ========================================================
-    // 啟用／停止連續掃描
-    // ========================================================
-
-    async function startSystem() {
-      const apiUrl = getApiUrl();
-
-      if (!apiUrl) {
-        alert('請先在上方設定 Apps Script 正式 /exec 網址。');
-        document.getElementById('apiUrl').focus();
-        return;
-      }
-
-      // 這個按鈕是使用者主動點擊，先在同一個 gesture 中啟用語音。
-      voiceEnabled = true;
-      speak('報到系統已啟用。請將來賓 QR Code 對準掃描框。');
-
-      if (scannerRunning) {
-        updateScannerStatus(true, '相機已啟用，請繼續掃描');
-        return;
-      }
-
-      if (typeof Html5Qrcode === 'undefined') {
-        alert('QR 掃描函式庫載入失敗，請確認網路連線後重新整理。');
-        return;
-      }
-
-      scanner = new Html5Qrcode(
-        'reader',
-        {
-          formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
-          verbose: false
-        }
+ 
+  <div class="panel">
+    <h2>⌨️ 手動輸入報到碼</h2>
+    <input id="codeInput" type="text" autocomplete="off" placeholder="例如 CEO2026-0002-...">
+    <button onclick="manualCheckin()">確認報到</button>
+  </div>
+ 
+  <div class="panel">
+    <h2>🔎 姓名／公司搜尋</h2>
+    <input id="keyword" type="text" autocomplete="off" placeholder="輸入公司名稱或姓名"
+      onkeydown="if(event.key==='Enter'){searchParticipant();}">
+    <button onclick="searchParticipant()">搜尋</button>
+    <div id="searchResults"></div>
+  </div>
+ 
+  <div class="footer">經濟部產業園區管理局｜高雄軟體園區辦公室</div>
+</div>
+ 
+<script>
+  // ==========================================================
+  // 與 Apps Script 控制頁連線資訊
+  // 這些參數由控制頁「啟動連續掃碼器」時自動帶入。
+  // 因此請勿直接從書籤開 GitHub Scanner。
+  // ==========================================================
+  const params = new URLSearchParams(window.location.search);
+  const CONTROL_ORIGIN = String(params.get('controlOrigin') || '').trim();
+  const SESSION_TOKEN = String(params.get('sessionToken') || '').trim();
+ 
+  let controlConnected = false;
+  let lastPongAt = 0;
+  let helloTimer = null;
+  let heartbeatTimer = null;
+ 
+  // ==========================================================
+  // Scanner 狀態
+  // ==========================================================
+  let html5QrCode = null;
+  let scannerStarted = false;
+  let scannerPaused = false;
+  let requestBusy = false;
+  let currentRequestId = '';
+  let requestTimer = null;
+  let lastScannedCode = '';
+  let lastScannedAt = 0;
+  const REQUEST_TIMEOUT_MS = 30000;
+  const DUPLICATE_SUPPRESS_MS = 7000;
+  const AUTO_RESUME_MS = 2600;
+ 
+  // ==========================================================
+  // 語音狀態
+  // ==========================================================
+  let checkinVoiceEnabled = false;
+  let speechVoices = [];
+  let lastResultForReplay = null;
+ 
+ 
+  // ==========================================================
+  // 初始化
+  // ==========================================================
+  window.addEventListener('load', function(){
+    loadVoices();
+    validateLaunchContext();
+  });
+ 
+ 
+  function validateLaunchContext(){
+    if (!window.opener || window.opener.closed || !CONTROL_ORIGIN || !SESSION_TOKEN) {
+      setConnection(
+        '此掃碼頁必須從 Apps Script 控制頁按「啟動連續掃碼器」開啟。請關閉本頁，回控制頁重新啟動。',
+        'error'
       );
-
-      const config = {
-        fps: 10,
-        qrbox: function (viewfinderWidth, viewfinderHeight) {
-          const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-          const size = Math.max(190, Math.floor(minEdge * 0.72));
-          return { width: size, height: size };
-        },
-        aspectRatio: 1.333333
-      };
-
-      try {
-        await scanner.start(
-          { facingMode: 'environment' },
-          config,
-          onScanSuccess,
-          function () {
-            // 掃描不到 QR 時不顯示錯誤，保持連續掃描。
-          }
-        );
-
-        scannerRunning = true;
-        scannerPaused = false;
-        document.getElementById('startButton').disabled = true;
-        document.getElementById('stopButton').disabled = false;
-        updateScannerStatus(true, '相機已啟用，請掃描來賓 QR Code');
-
-      } catch (error) {
-        console.error(error);
-        scannerRunning = false;
-        updateScannerStatus(false, '無法啟用相機');
-        alert(
-          '相機啟用失敗。\n\n' +
-          '請確認：\n' +
-          '1. 此頁是 HTTPS 網址\n' +
-          '2. 已允許瀏覽器使用相機\n' +
-          '3. 沒有其他 App 正在占用相機\n\n' +
-          String(error)
-        );
-      }
+      setScanStatus('未連線控制頁，無法報到。');
+      return;
     }
-
-    async function stopScanner() {
-      clearTimeout(resumeTimer);
-      clearTimeout(apiTimer);
-
-      if (!scanner || !scannerRunning) {
-        return;
-      }
-
-      try {
-        await scanner.stop();
-      } catch (error) {
-        console.warn(error);
-      }
-
-      scannerRunning = false;
-      scannerPaused = false;
-      processing = false;
-      document.getElementById('startButton').disabled = false;
-      document.getElementById('stopButton').disabled = true;
-      updateScannerStatus(false, '相機已停止');
+ 
+    sendHello();
+    helloTimer = setInterval(sendHello, 1800);
+    heartbeatTimer = setInterval(sendPing, 10000);
+  }
+ 
+ 
+  function sendToControl(message){
+    if (!window.opener || window.opener.closed) {
+      controlConnected = false;
+      setConnection('Apps Script 控制頁已關閉，請重新從控制頁啟動掃碼器。', 'error');
+      document.getElementById('startBtn').disabled = true;
+      return false;
     }
-
-    function pauseScanner() {
-      if (!scanner || !scannerRunning || scannerPaused) {
-        return;
-      }
-
-      try {
-        scanner.pause(true);
-        scannerPaused = true;
-      } catch (error) {
-        console.warn('暫停掃描失敗：', error);
-      }
-    }
-
-    function resumeScanner() {
-      clearTimeout(resumeTimer);
-
-      if (!scanner || !scannerRunning || !scannerPaused) {
-        processing = false;
-        return;
-      }
-
-      try {
-        scanner.resume();
-        scannerPaused = false;
-        processing = false;
-        updateScannerStatus(true, '請掃描下一位來賓 QR Code');
-      } catch (error) {
-        console.warn('恢復掃描失敗：', error);
-        processing = false;
-      }
-    }
-
-    function updateScannerStatus(isOn, text) {
-      document.getElementById('scannerDot').classList.toggle('on', !!isOn);
-      document.getElementById('scannerMessage').lastChild.textContent = ' ' + text;
-    }
-
-    // ========================================================
-    // QR Code 解碼後處理
-    // ========================================================
-
-    function onScanSuccess(decodedText) {
-      if (processing) {
-        return;
-      }
-
-      const code = extractCheckinCode(decodedText);
-
-      if (!code) {
-        processing = true;
-        pauseScanner();
-        showLocalError('QR Code 內容不正確，找不到報到碼。');
-        return;
-      }
-
-      const now = Date.now();
-      if (code === lastCode && now - lastCodeAt < SAME_CODE_COOLDOWN_MS) {
-        return;
-      }
-
-      lastCode = code;
-      lastCodeAt = now;
-      processing = true;
-      pauseScanner();
-      submitCheckin(code);
-    }
-
-    function extractCheckinCode(decodedText) {
-      const text = String(decodedText || '').trim();
-
-      if (!text) {
-        return '';
-      }
-
-      try {
-        const url = new URL(text);
-        const code = url.searchParams.get('code');
-        if (code) {
-          return normalizeCode(code);
-        }
-      } catch (_) {
-        // 不是 URL，改以純報到碼處理。
-      }
-
-      const match = text.match(/[?&]code=([^&#]+)/i);
-      if (match) {
-        try {
-          return normalizeCode(decodeURIComponent(match[1]));
-        } catch (_) {
-          return normalizeCode(match[1]);
-        }
-      }
-
-      return normalizeCode(text);
-    }
-
-    function normalizeCode(value) {
-      return String(value || '')
-        .normalize('NFKC')
-        .replace(/\s+/g, '')
-        .trim()
-        .toUpperCase();
-    }
-
-    // ========================================================
-    // 對 Apps Script 後端送出報到
-    // ========================================================
-
-    function submitCheckin(code) {
-      const apiUrl = getApiUrl();
-
-      if (!apiUrl) {
-        showLocalError('尚未設定 Apps Script 後端網址。');
-        return;
-      }
-
-      clearTimeout(apiTimer);
-      updateScannerStatus(true, '正在確認報到資料…');
-
-      const form = document.getElementById('apiForm');
-      form.action = apiUrl;
-      document.getElementById('apiCode').value = code;
-
-      // 每次請求建立唯一 requestId，避免上一筆延遲回應干擾下一位。
-      const requestId =
-        Date.now().toString(36) + '-' +
-        Math.random().toString(36).slice(2, 10);
-
-      pendingRequestId = requestId;
-      document.getElementById('apiRequestId').value = requestId;
-
-      apiTimer = setTimeout(function () {
-        // 只有仍在等待同一筆請求時才顯示逾時。
-        if (pendingRequestId === requestId) {
-          pendingRequestId = '';
-          showLocalError(
-            '後端回應逾時（已等待30秒）。請先查看Google試算表是否已寫入「已報到」；' +
-            '若已寫入，表示後端成功但回傳橋接未收到。'
-          );
-        }
-      }, API_TIMEOUT_MS);
-
-      form.submit();
-    }
-
-    // Apps Script doPost() 回傳頁面會以 postMessage 傳結果回來。
-    window.addEventListener('message', function (event) {
-      const data = event.data;
-
-      if (!data || data.source !== 'CEO_CHECKIN_API') {
-        return;
-      }
-
-      // Apps Script 回應通常來自 script.google.com 或 *.googleusercontent.com。
-      // 某些 iframe 沙箱情況可能回傳 origin="null"；此時再靠 requestId 驗證。
-      const origin = String(event.origin || '');
-      const trustedOrigin =
-        origin === 'https://script.google.com' ||
-        origin.endsWith('.googleusercontent.com') ||
-        origin === 'null';
-
-      if (!trustedOrigin) {
-        console.warn('忽略非 Google Apps Script 來源訊息：', origin);
-        return;
-      }
-
-      const responseRequestId = String(data.requestId || '');
-
-      // 有待處理請求時，只接受同一 requestId 的回應。
-      if (pendingRequestId && responseRequestId !== pendingRequestId) {
-        console.warn(
-          '忽略非目前請求的後端回應。等待：',
-          pendingRequestId,
-          '收到：',
-          responseRequestId
-        );
-        return;
-      }
-
-      clearTimeout(apiTimer);
-      pendingRequestId = '';
-      handleCheckinResult(data.payload || {});
+ 
+    const payload = Object.assign({}, message, {
+      source: 'CEO_SCANNER',
+      sessionToken: SESSION_TOKEN
     });
-
-    // ========================================================
-    // 報到結果顯示＋語音
-    // ========================================================
-
-    function handleCheckinResult(result) {
-      const type = String(result.type || 'error');
-      const success = type === 'success';
-      const warning = type === 'warning';
-      const message = String(result.message || (success ? '報到成功' : '報到失敗'));
-      const badge = String(result.badgeNumber || '').trim();
-
-      const panel = document.getElementById('resultPanel');
-      panel.className = 'result-panel ' + (success ? 'success' : warning ? 'warning' : 'error');
-
-      document.getElementById('resultTitle').textContent =
-        (success ? '✅ ' : warning ? '⚠️ ' : '❌ ') + message;
-
-      const badgeBlock = document.getElementById('badgeBlock');
-      if (badge) {
-        badgeBlock.classList.remove('hidden');
-        document.getElementById('badgeNumber').textContent = badge;
+ 
+    window.opener.postMessage(payload, CONTROL_ORIGIN);
+    return true;
+  }
+ 
+ 
+  function sendHello(){
+    sendToControl({type:'HELLO'});
+  }
+ 
+ 
+  function sendPing(){
+    if (!controlConnected) return;
+    sendToControl({type:'PING', ts:Date.now()});
+ 
+    if (lastPongAt && Date.now() - lastPongAt > 30000) {
+      controlConnected = false;
+      setConnection('控制頁連線中斷，請確認 Apps Script 控制頁仍保持開啟。', 'error');
+      document.getElementById('startBtn').disabled = true;
+    }
+  }
+ 
+ 
+  window.addEventListener('message', function(event){
+    if (!window.opener || event.source !== window.opener) return;
+    if (CONTROL_ORIGIN && event.origin !== CONTROL_ORIGIN) return;
+ 
+    const data = event.data || {};
+    if (data.source !== 'CEO_CONTROL') return;
+    if (data.sessionToken !== SESSION_TOKEN) return;
+ 
+    if (data.type === 'HELLO_ACK') {
+      controlConnected = true;
+      lastPongAt = Date.now();
+      if (helloTimer) {
+        clearInterval(helloTimer);
+        helloTimer = null;
+      }
+      setConnection('✅ Apps Script 控制頁已連線，可開始報到。', 'ok');
+      document.getElementById('startBtn').disabled = false;
+      setScanStatus('控制頁已連線。請按「啟用相機＋測試報到語音」。');
+      requestDashboard();
+      return;
+    }
+ 
+    if (data.type === 'PONG') {
+      lastPongAt = Date.now();
+      return;
+    }
+ 
+    if (data.type === 'DASHBOARD_RESULT') {
+      updateDashboard(data.payload || {});
+      return;
+    }
+ 
+    if (data.type === 'CHECKIN_RESULT') {
+      if (!currentRequestId || data.requestId !== currentRequestId) return;
+      finishRequest();
+      handleCheckinResult(data.payload || {});
+      return;
+    }
+ 
+    if (data.type === 'SEARCH_RESULT') {
+      if (!currentRequestId || data.requestId !== currentRequestId) return;
+      finishRequest(false);
+      if (data.errorMessage) {
+        showResult({type:'error',message:'搜尋失敗：' + data.errorMessage});
       } else {
-        badgeBlock.classList.add('hidden');
-        document.getElementById('badgeNumber').textContent = '---';
+        renderSearchResults(data.payload || []);
       }
-
-      const personLines = [];
-      if (result.company) {
-        personLines.push('<div class="company">' + escapeHtml(result.company) + '</div>');
-      }
-
-      if (result.name || result.title) {
-        personLines.push(
-          '<div>' +
-          escapeHtml(result.name || '') +
-          (result.title ? '　' + escapeHtml(result.title) : '') +
-          '</div>'
-        );
-      }
-
-      if (result.meal) {
-        personLines.push('<div>餐食：' + escapeHtml(result.meal) + '</div>');
-      }
-
-      document.getElementById('personBlock').innerHTML = personLines.join('');
-      document.getElementById('resultTime').textContent =
-        result.checkinTime ? '報到時間：' + result.checkinTime : '';
-
-      document.getElementById('resultOverlay').classList.add('show');
-
-      if (success && badge) {
-        const chineseBadge = badgeNumberToChinese(badge);
-        const personName = String(result.name || '').trim();
-
-        if (personName) {
-          speak(personName + '您好，報到成功，請領取' + chineseBadge + '號名牌。');
-        } else {
-          speak('報到成功，請領取' + chineseBadge + '號名牌。');
-        }
-      } else if (success) {
-        const personName = String(result.name || '').trim();
-
-        if (personName) {
-          speak(personName + '您好，報到成功。');
-        } else {
-          speak('報到成功。');
-        }
-      }
-
-      clearTimeout(resumeTimer);
-      resumeTimer = setTimeout(closeResultAndResume, RESULT_DISPLAY_MS);
     }
-
-    function showLocalError(message) {
-      clearTimeout(apiTimer);
-      pendingRequestId = '';
-
-      handleCheckinResult({
-        type: 'error',
-        message: message
+  });
+ 
+ 
+  function setConnection(text, type){
+    const el = document.getElementById('connection');
+    el.textContent = text;
+    el.className = 'connection ' + (type || '');
+  }
+ 
+ 
+  // ==========================================================
+  // 相機啟動／停止／暫停／恢復
+  // ==========================================================
+  async function startSystem(){
+    if (!controlConnected) {
+      showResult({type:'error',message:'尚未連線 Apps Script 控制頁。'});
+      return;
+    }
+ 
+    if (typeof Html5Qrcode === 'undefined') {
+      showResult({type:'error',message:'掃碼函式庫載入失敗，請確認網路連線後重新整理頁面。'});
+      return;
+    }
+ 
+    unlockVoice();
+ 
+    try {
+      if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode('reader');
+      }
+ 
+      if (scannerStarted) {
+        setScanStatus('相機已啟用，可直接掃描下一位。');
+        return;
+      }
+ 
+      setScanStatus('正在啟動手機後鏡頭…');
+ 
+      await html5QrCode.start(
+        { facingMode: 'environment' },
+        {
+          fps: 10,
+          qrbox: function(viewfinderWidth, viewfinderHeight){
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            const size = Math.floor(minEdge * 0.72);
+            return {width:size, height:size};
+          },
+          aspectRatio: 1.333334
+        },
+        onScanSuccess,
+        function(){ /* 忽略逐幀未辨識訊息 */ }
+      );
+ 
+      scannerStarted = true;
+      scannerPaused = false;
+      document.getElementById('startBtn').disabled = true;
+      document.getElementById('stopBtn').disabled = false;
+      setScanStatus('📷 相機已啟用。請將來賓 QR Code 對準框內。');
+ 
+    } catch (error) {
+      scannerStarted = false;
+      scannerPaused = false;
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('stopBtn').disabled = true;
+      showResult({
+        type:'error',
+        message:'無法開啟相機：' + (error && error.message ? error.message : String(error))
       });
+      setScanStatus('若使用 iPhone，請確認 Safari 已允許此 GitHub Pages 網站使用相機。');
     }
-
-    function closeResultAndResume() {
-      clearTimeout(resumeTimer);
-      document.getElementById('resultOverlay').classList.remove('show');
-      resumeScanner();
+  }
+ 
+ 
+  async function stopScanner(){
+    if (!html5QrCode || !scannerStarted) return;
+ 
+    try {
+      await html5QrCode.stop();
+    } catch (e) {
+      console.warn(e);
     }
-
-    // ========================================================
-    // 手動報到備援
-    // ========================================================
-
-    function manualCheckin() {
-      if (processing) {
-        return;
+ 
+    scannerStarted = false;
+    scannerPaused = false;
+    document.getElementById('startBtn').disabled = !controlConnected;
+    document.getElementById('stopBtn').disabled = true;
+    setScanStatus('相機已停止。');
+  }
+ 
+ 
+  function pauseScanner(){
+    if (!html5QrCode || !scannerStarted || scannerPaused) return;
+    try {
+      html5QrCode.pause(true);
+      scannerPaused = true;
+    } catch (e) {
+      console.warn('pause failed', e);
+    }
+  }
+ 
+ 
+  function resumeScanner(){
+    if (!html5QrCode || !scannerStarted || !scannerPaused) return;
+    try {
+      html5QrCode.resume();
+      scannerPaused = false;
+      setScanStatus('📷 請掃描下一位來賓 QR Code。');
+    } catch (e) {
+      console.warn('resume failed', e);
+    }
+  }
+ 
+ 
+  function onScanSuccess(decodedText){
+    const code = normalizeScannedCode(decodedText);
+    if (!code || requestBusy) return;
+ 
+    const now = Date.now();
+    if (code === lastScannedCode && now - lastScannedAt < DUPLICATE_SUPPRESS_MS) {
+      return;
+    }
+ 
+    lastScannedCode = code;
+    lastScannedAt = now;
+    submitCode(code);
+  }
+ 
+ 
+  function normalizeScannedCode(value){
+    let text = String(value || '').trim();
+ 
+    try {
+      const url = new URL(text);
+      const queryCode = url.searchParams.get('code');
+      if (queryCode) text = queryCode;
+    } catch (e) {
+      // 純報到碼不是網址，直接往下處理。
+    }
+ 
+    const match = text.match(/CEO2026-[A-Z0-9-]+/i);
+    if (match) text = match[0];
+ 
+    return text
+      .normalize('NFKC')
+      .replace(/\s+/g, '')
+      .trim()
+      .toUpperCase();
+  }
+ 
+ 
+  // ==========================================================
+  // 報到請求：只傳給 Apps Script 控制頁，不直接呼叫後端。
+  // ==========================================================
+  function randomRequestId(){
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'R-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+  }
+ 
+ 
+  function submitCode(rawCode){
+    const code = normalizeScannedCode(rawCode);
+ 
+    if (!code) {
+      showResult({type:'error',message:'報到碼為空白。'});
+      return;
+    }
+ 
+    if (!controlConnected) {
+      showResult({type:'error',message:'Apps Script 控制頁目前未連線。'});
+      return;
+    }
+ 
+    if (requestBusy) return;
+ 
+    requestBusy = true;
+    currentRequestId = randomRequestId();
+    pauseScanner();
+    setScanStatus('正在確認報到資料：' + code);
+ 
+    sendToControl({
+      type:'CHECKIN_REQUEST',
+      requestId:currentRequestId,
+      code:code
+    });
+ 
+    requestTimer = setTimeout(function(){
+      if (!requestBusy) return;
+      requestBusy = false;
+      currentRequestId = '';
+      showResult({
+        type:'error',
+        message:'Apps Script 控制頁未在30秒內回應。請確認控制頁仍保持開啟，再重新掃描。'
+      });
+      setScanStatus('控制頁回應逾時。');
+      setTimeout(resumeScanner, 1000);
+    }, REQUEST_TIMEOUT_MS);
+  }
+ 
+ 
+  function manualCheckin(){
+    const code = document.getElementById('codeInput').value.trim();
+    submitCode(code);
+  }
+ 
+ 
+  function finishRequest(shouldResume){
+    if (requestTimer) {
+      clearTimeout(requestTimer);
+      requestTimer = null;
+    }
+    requestBusy = false;
+    currentRequestId = '';
+ 
+    if (shouldResume !== false) {
+      setTimeout(resumeScanner, AUTO_RESUME_MS);
+    }
+  }
+ 
+ 
+  // ==========================================================
+  // 報到結果：大字名牌＋姓名語音
+  // ==========================================================
+  function handleCheckinResult(result){
+    lastResultForReplay = result || null;
+    showResult(result || {});
+    requestDashboard();
+ 
+    if (result && result.type === 'success' && result.name && result.badgeNumber) {
+      setTimeout(function(){
+        speakCheckinSuccess(result.name, result.badgeNumber);
+      }, 180);
+    }
+  }
+ 
+ 
+  function showResult(result){
+    const box = document.getElementById('result');
+    const type = result.type || 'error';
+ 
+    let cssClass = 'error-result';
+    let icon = '❌';
+ 
+    if (type === 'success') {
+      cssClass = 'success-result';
+      icon = '✅';
+    } else if (type === 'warning') {
+      cssClass = 'warning-result';
+      icon = '⚠️';
+    }
+ 
+    let html = '<div class="result-title">' + icon + ' ' + escapeHtml(result.message || '') + '</div>';
+ 
+    if (result.badgeNumber) {
+      html +=
+        '<div class="badge-card">' +
+          '<div class="badge-label">請領取名牌編號</div>' +
+          '<div class="badge-number">' + escapeHtml(result.badgeNumber) + '</div>' +
+        '</div>';
+    }
+ 
+    if (result.name) {
+      html +=
+        '<div class="person">' +
+          '<div class="person-name">' + escapeHtml(result.name) + '　' + escapeHtml(result.title || '') + '</div>' +
+          '<strong>' + escapeHtml(result.company || '') + '</strong><br>' +
+          '餐食：' + escapeHtml(result.meal || '') + '<br>' +
+          (result.checkinTime ? '報到時間：' + escapeHtml(result.checkinTime) : '') +
+        '</div>';
+ 
+      if (result.badgeNumber) {
+        html += '<button class="success" onclick="replayLastVoice()">🔊 再播一次姓名＋名牌號碼</button>';
       }
-
-      const input = document.getElementById('manualCode');
-      const code = normalizeCode(input.value);
-
-      if (!code) {
-        alert('請輸入報到碼。');
-        input.focus();
-        return;
+    }
+ 
+    box.className = 'result ' + cssClass;
+    box.innerHTML = html;
+    box.style.display = 'block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+ 
+ 
+  function replayLastVoice(){
+    if (!lastResultForReplay || !lastResultForReplay.name || !lastResultForReplay.badgeNumber) return;
+    speakCheckinSuccess(lastResultForReplay.name, lastResultForReplay.badgeNumber);
+  }
+ 
+ 
+  // ==========================================================
+  // 中文語音
+  // ==========================================================
+  function loadVoices(){
+    if (!('speechSynthesis' in window)) return;
+ 
+    speechVoices = window.speechSynthesis.getVoices() || [];
+    const select = document.getElementById('voiceSelect');
+    select.innerHTML = '';
+ 
+    const chinese = speechVoices.filter(function(voice){
+      return String(voice.lang || '').toLowerCase().startsWith('zh');
+    });
+ 
+    const list = chinese.length ? chinese : speechVoices;
+ 
+    list.forEach(function(voice, index){
+      const option = document.createElement('option');
+      option.value = voice.name;
+      option.textContent = voice.name + '（' + voice.lang + '）';
+      select.appendChild(option);
+    });
+ 
+    // 優先台灣中文，再嘗試名稱中常見女聲關鍵字。
+    let preferred = list.find(function(v){
+      return String(v.lang || '').toLowerCase().replace('_','-').startsWith('zh-tw');
+    });
+ 
+    const femaleKeywords = ['female','mei','ting','hsiao','xiaoxiao','美','婷','曉'];
+    for (const keyword of femaleKeywords) {
+      const found = list.find(function(v){
+        return String(v.name || '').toLowerCase().includes(keyword.toLowerCase());
+      });
+      if (found) {
+        preferred = found;
+        break;
       }
-
-      processing = true;
-      pauseScanner();
-      submitCheckin(code);
-      input.value = '';
     }
-
-    // ========================================================
-    // HTML 安全處理
-    // ========================================================
-
-    function escapeHtml(value) {
-      return String(value == null ? '' : value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+ 
+    if (preferred) select.value = preferred.name;
+  }
+ 
+ 
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
+  }
+ 
+ 
+  function unlockVoice(){
+    if (!('speechSynthesis' in window)) {
+      showResult({type:'warning',message:'此瀏覽器不支援語音播報。'});
+      return;
     }
-  </script>
+ 
+    checkinVoiceEnabled = true;
+    speakText('報到系統已啟用');
+  }
+ 
+ 
+  function getSelectedVoice(){
+    const selectedName = document.getElementById('voiceSelect').value;
+    return speechVoices.find(function(v){ return v.name === selectedName; }) || null;
+  }
+ 
+ 
+  function speakText(text){
+    if (!checkinVoiceEnabled || !('speechSynthesis' in window)) return;
+ 
+    window.speechSynthesis.cancel();
+ 
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'zh-TW';
+    utterance.volume = 1.0;
+    utterance.rate = 0.88;
+    utterance.pitch = 1.10;
+ 
+    const voice = getSelectedVoice();
+    if (voice) utterance.voice = voice;
+ 
+    window.speechSynthesis.speak(utterance);
+  }
+ 
+ 
+  function badgeNumberToChinese(badgeNumber){
+    const number = parseInt(String(badgeNumber || '').replace(/\D/g,''), 10);
+    if (isNaN(number)) return String(badgeNumber || '');
+ 
+    const digits = ['零','一','二','三','四','五','六','七','八','九'];
+ 
+    if (number < 10) return digits[number];
+    if (number === 10) return '十';
+    if (number < 20) return '十' + (number % 10 === 0 ? '' : digits[number % 10]);
+    if (number < 100) {
+      const tens = Math.floor(number / 10);
+      const ones = number % 10;
+      return digits[tens] + '十' + (ones === 0 ? '' : digits[ones]);
+    }
+    return String(number);
+  }
+ 
+ 
+  function speakCheckinSuccess(name, badgeNumber){
+    const safeName = String(name || '').trim();
+    const chineseBadge = badgeNumberToChinese(badgeNumber);
+ 
+    const text = safeName
+      ? safeName + '您好，報到成功，請領取' + chineseBadge + '號名牌。'
+      : '報到成功，請領取' + chineseBadge + '號名牌。';
+ 
+    speakText(text);
+  }
+ 
+ 
+  // ==========================================================
+  // Dashboard
+  // ==========================================================
+  function requestDashboard(){
+    if (!controlConnected) return;
+    sendToControl({
+      type:'DASHBOARD_REQUEST',
+      requestId:randomRequestId()
+    });
+  }
+ 
+ 
+  function updateDashboard(data){
+    if (!data || data.error) return;
+    document.getElementById('registered').textContent = data.registered;
+    document.getElementById('checkedIn').textContent = data.checkedIn;
+    document.getElementById('notCheckedIn').textContent = data.notCheckedIn;
+    document.getElementById('rate').textContent = data.rate + '%';
+  }
+ 
+ 
+  // ==========================================================
+  // 姓名／公司搜尋
+  // ==========================================================
+  function searchParticipant(){
+    const keyword = document.getElementById('keyword').value.trim();
+    if (!keyword) {
+      showResult({type:'error',message:'請輸入公司名稱或姓名。'});
+      return;
+    }
+ 
+    if (!controlConnected || requestBusy) return;
+ 
+    requestBusy = true;
+    currentRequestId = randomRequestId();
+ 
+    sendToControl({
+      type:'SEARCH_REQUEST',
+      requestId:currentRequestId,
+      keyword:keyword
+    });
+ 
+    requestTimer = setTimeout(function(){
+      if (!requestBusy) return;
+      requestBusy = false;
+      currentRequestId = '';
+      showResult({type:'error',message:'搜尋逾時，請確認 Apps Script 控制頁仍保持開啟。'});
+    }, REQUEST_TIMEOUT_MS);
+  }
+ 
+ 
+  function renderSearchResults(results){
+    const box = document.getElementById('searchResults');
+    box.innerHTML = '';
+ 
+    if (!results || results.length === 0) {
+      box.innerHTML = '<p>查無符合資料。</p>';
+      return;
+    }
+ 
+    results.forEach(function(item){
+      const div = document.createElement('div');
+      div.className = 'search-item';
+ 
+      let action = '';
+      if (item.registrationStatus !== '報名成功') {
+        action = '<div class="already">不可報到：' + escapeHtml(item.registrationStatus || '狀態不明') + '</div>';
+      } else if (item.checkinStatus === '已報到') {
+        action = '<div class="already">已報到：' + escapeHtml(item.checkinTime || '') + '｜名牌 ' + escapeHtml(item.badgeNumber || '') + '</div>';
+      } else {
+        action = '<button class="mini-btn" onclick="checkinRow(' + Number(item.row) + ')">確認報到</button>';
+      }
+ 
+      div.innerHTML =
+        '<div class="company">' + escapeHtml(item.company || '') + '</div>' +
+        '<div class="detail">' +
+          escapeHtml(item.name || '') + '｜' + escapeHtml(item.title || '') + '<br>' +
+          '名牌：' + escapeHtml(item.badgeNumber || '') + '｜餐食：' + escapeHtml(item.meal || '') +
+        '</div>' + action;
+ 
+      box.appendChild(div);
+    });
+  }
+ 
+ 
+  function checkinRow(row){
+    if (!controlConnected || requestBusy) return;
+ 
+    requestBusy = true;
+    currentRequestId = randomRequestId();
+    pauseScanner();
+ 
+    sendToControl({
+      type:'ROW_CHECKIN_REQUEST',
+      requestId:currentRequestId,
+      row:Number(row)
+    });
+ 
+    requestTimer = setTimeout(function(){
+      if (!requestBusy) return;
+      requestBusy = false;
+      currentRequestId = '';
+      showResult({type:'error',message:'人工報到逾時，請確認 Apps Script 控制頁仍保持開啟。'});
+      setTimeout(resumeScanner, 1000);
+    }, REQUEST_TIMEOUT_MS);
+  }
+ 
+ 
+  function setScanStatus(text){
+    document.getElementById('scanStatus').textContent = text;
+  }
+ 
+ 
+  function escapeHtml(text){
+    return String(text || '')
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+  }
+</script>
 </body>
 </html>
