@@ -121,7 +121,34 @@
       return;
     }
 
-    if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(?:\?.*)?$/i.test(CONTROL_URL)) {
+     function openControlPage() {
+  if (!navigator.onLine) {
+    alert('目前沒有網路連線，請恢復網路後再啟動報到系統。');
+    return;
+  }
+
+  const valid =
+    /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec(?:\?.*)?$/i
+      .test(CONTROL_URL);
+
+  const hasPlaceholder =
+    CONTROL_URL.includes('請貼上') ||
+    CONTROL_URL.includes('部署ID');
+
+  if (!valid || hasPlaceholder) {
+    alert(
+      'Apps Script 控制頁網址尚未正確設定。\n\n' +
+      '請在 pwa/index.html 的 CONTROL_URL 貼上正式 /exec 網址。'
+    );
+    return;
+  }
+
+  const opened = window.open(CONTROL_URL, '_blank');
+
+  if (!opened) {
+    window.location.href = CONTROL_URL;
+  }
+}
       alert('尚未設定正確的 Apps Script /exec 網址。請先修改 pwa/index.html 的 CONTROL_URL。');
       return;
     }
