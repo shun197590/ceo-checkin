@@ -2,177 +2,709 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
   <title>CEO 聯誼會報到｜工作人員入口</title>
 
+  <!-- PWA -->
   <link rel="manifest" href="./manifest.json">
+
   <meta name="theme-color" content="#59b9c2">
+
+  <!-- iPhone / iPad 加入主畫面 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="CEO報到">
-  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+  >
+  <meta
+    name="apple-mobile-web-app-title"
+    content="CEO報到"
+  >
+
+  <!-- iOS 主畫面圖示 -->
+  <link
+    rel="apple-touch-icon"
+    href="./icons/apple-touch-icon.png"
+  >
+
+  <!-- 一般瀏覽器圖示 -->
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="./icons/icon-192.png"
+  >
+
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="512x512"
+    href="./icons/icon-512.png"
+  >
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
     body {
       margin: 0;
-      padding: 18px;
-      background: #f4f6f8;
+      padding:
+        max(18px, env(safe-area-inset-top))
+        max(18px, env(safe-area-inset-right))
+        max(18px, env(safe-area-inset-bottom))
+        max(18px, env(safe-area-inset-left));
+
+      background:
+        linear-gradient(
+          180deg,
+          #eefafa 0%,
+          #f4f6f8 50%,
+          #f4f6f8 100%
+        );
+
       color: #222;
-      font-family: Arial, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+
+      font-family:
+        Arial,
+        "Noto Sans TC",
+        "Microsoft JhengHei",
+        sans-serif;
     }
-    .wrap { max-width: 680px; margin: 0 auto; }
+
+    .wrap {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .brand {
+      text-align: center;
+      margin: 8px 0 18px;
+    }
+
+    .brand-icon {
+      width: 92px;
+      height: 92px;
+      border-radius: 22px;
+      object-fit: cover;
+
+      box-shadow:
+        0 5px 18px rgba(0, 0, 0, .14);
+
+      margin-bottom: 10px;
+    }
+
     .card {
       background: #fff;
+
       border-radius: 18px;
+
       padding: 22px;
+
       margin-bottom: 16px;
-      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+
+      box-shadow:
+        0 2px 12px rgba(0, 0, 0, .08);
     }
-    h1 { margin: 0 0 8px; font-size: 25px; line-height: 1.45; }
-    .sub { color: #666; line-height: 1.7; }
+
+    h1 {
+      margin: 0 0 8px;
+
+      font-size: 25px;
+
+      line-height: 1.45;
+
+      text-align: center;
+
+      color: #135f68;
+    }
+
+    .sub {
+      color: #666;
+
+      line-height: 1.7;
+
+      text-align: center;
+    }
+
     .status {
       margin: 18px 0;
+
       padding: 14px 16px;
+
       border-radius: 12px;
+
       background: #eef3fd;
+
       font-weight: 700;
+
+      line-height: 1.6;
     }
-    .status.online { background: #e6f4ea; color: #137333; }
-    .status.offline { background: #fce8e6; color: #b3261e; }
+
+    .status.online {
+      background: #e6f4ea;
+      color: #137333;
+    }
+
+    .status.offline {
+      background: #fce8e6;
+      color: #b3261e;
+    }
+
     button {
       width: 100%;
+
+      min-height: 56px;
+
       border: 0;
-      border-radius: 12px;
+
+      border-radius: 14px;
+
       padding: 16px;
+
       font-size: 18px;
+
       font-weight: 800;
-      background: #1a73e8;
+
+      background:
+        linear-gradient(
+          135deg,
+          #13a8a5,
+          #087ea4
+        );
+
       color: #fff;
+
       cursor: pointer;
+
+      box-shadow:
+        0 4px 12px rgba(8, 126, 164, .25);
+
+      transition:
+        transform .12s ease,
+        opacity .12s ease;
     }
-    button:disabled { opacity: .45; cursor: not-allowed; }
-    .steps { line-height: 1.9; padding-left: 24px; }
+
+    button:active {
+      transform: scale(.985);
+    }
+
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .launch-icon {
+      margin-right: 4px;
+    }
+
+    .steps {
+      line-height: 1.9;
+      padding-left: 24px;
+      margin-bottom: 0;
+    }
+
+    .steps li {
+      margin-bottom: 5px;
+    }
+
     .note {
       margin-top: 16px;
+
       padding: 14px 16px;
+
       border-radius: 12px;
+
       background: #fef7e0;
-      line-height: 1.7;
+
+      line-height: 1.75;
+
+      color: #5f4b00;
     }
-    .footer { color: #777; text-align: center; font-size: 13px; padding: 4px 0 16px; }
+
+    .note strong {
+      color: #3c4043;
+    }
+
+    .system-info {
+      margin-top: 14px;
+
+      padding: 12px 14px;
+
+      background: #f6f8fa;
+
+      border-radius: 10px;
+
+      color: #666;
+
+      font-size: 13px;
+
+      line-height: 1.7;
+
+      word-break: break-word;
+    }
+
+    .footer {
+      color: #777;
+
+      text-align: center;
+
+      font-size: 13px;
+
+      line-height: 1.7;
+
+      padding: 4px 0 20px;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding:
+          max(14px, env(safe-area-inset-top))
+          max(14px, env(safe-area-inset-right))
+          max(14px, env(safe-area-inset-bottom))
+          max(14px, env(safe-area-inset-left));
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      .brand-icon {
+        width: 84px;
+        height: 84px;
+      }
+
+      button {
+        font-size: 17px;
+      }
+    }
   </style>
 </head>
+
+
 <body>
+
 <div class="wrap">
+
+  <!-- ==========================================
+       品牌區
+       ========================================== -->
+  <div class="brand">
+
+    <img
+      class="brand-icon"
+      src="./icons/icon-192.png"
+      alt="CEO報到"
+    >
+
+  </div>
+
+
+  <!-- ==========================================
+       主控制卡
+       ========================================== -->
   <div class="card">
-    <h1>115年度高雄軟體園區CEO聯誼會</h1>
-    <div class="sub">工作人員報到入口 PWA 1.0</div>
 
-    <div id="networkStatus" class="status">正在確認網路狀態…</div>
+    <h1>
+      115年度高雄軟體園區CEO聯誼會
+    </h1>
 
-    <button id="launchButton" onclick="openControlPage()">
+    <div class="sub">
+      工作人員報到入口
+    </div>
+
+    <div
+      id="networkStatus"
+      class="status"
+    >
+      正在確認網路狀態…
+    </div>
+
+
+    <button
+      id="launchButton"
+      type="button"
+      onclick="openControlPage()"
+    >
+      <span class="launch-icon">📷</span>
       啟動 Apps Script 報到控制頁
     </button>
 
+
     <div class="note">
-      PWA 只負責快速進入系統，不直接寫入 Google Sheets。<br>
-      開啟控制頁後，請再按「測試 Apps Script 後端」及「啟動連續掃碼器」。
+
+      <strong>使用說明</strong><br>
+
+      此 PWA 僅作為工作人員快速進入報到系統的入口，
+      不直接讀寫 Google Sheets。<br><br>
+
+      開啟 Apps Script 控制頁後，
+      請依序按：
+
+      <br>
+
+      ①「測試 Apps Script 後端」<br>
+      ②「啟動連續掃碼器」<br>
+      ③ 掃碼頁的「啟用相機＋測試報到語音」
+
     </div>
+
+
+    <div class="system-info">
+
+      系統狀態：
+      <span id="systemStatus">
+        等待啟動
+      </span>
+
+    </div>
+
   </div>
 
+
+  <!-- ==========================================
+       活動當天操作流程
+       ========================================== -->
   <div class="card">
-    <strong>活動當天操作順序</strong>
+
+    <strong>
+      活動當天操作順序
+    </strong>
+
     <ol class="steps">
-      <li>點手機主畫面的「CEO報到」。</li>
-      <li>確認顯示「網路已連線」。</li>
-      <li>點「啟動 Apps Script 報到控制頁」。</li>
-      <li>在控制頁按「測試 Apps Script 後端」。</li>
-      <li>按「啟動連續掃碼器」。</li>
-      <li>掃碼頁再按「啟用相機＋測試報到語音」。</li>
+
+      <li>
+        點手機主畫面的「CEO報到」。
+      </li>
+
+      <li>
+        確認畫面顯示「網路已連線」。
+      </li>
+
+      <li>
+        點「啟動 Apps Script 報到控制頁」。
+      </li>
+
+      <li>
+        在 Apps Script 控制頁按
+        「測試 Apps Script 後端」。
+      </li>
+
+      <li>
+        確認測試成功後，
+        按「啟動連續掃碼器」。
+      </li>
+
+      <li>
+        在 GitHub 掃碼頁按
+        「啟用相機＋測試報到語音」。
+      </li>
+
+      <li>
+        開始連續掃描來賓 QR Code。
+      </li>
+
     </ol>
+
   </div>
 
-  <div class="footer">經濟部產業園區管理局｜高雄軟體園區辦公室</div>
+
+  <div class="footer">
+
+    經濟部產業園區管理局<br>
+    高雄軟體園區辦公室
+
+  </div>
+
 </div>
 
+
+
 <script>
-  // ★ 請把下面網址改成「目前正式部署的 Apps Script /exec 網址」。
-  const CONTROL_URL = 'https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbw472sz_13s3Sk5Y4oexnY2sSOUwjQuL44axG4blYIzkvGJmx_CPoiu2K5TgLmIM1SK/exec';
+
+  // ============================================================
+  // 115年度高雄軟體園區CEO聯誼會
+  // PWA 工作人員入口
+  //
+  // ★ 正式 Apps Script Web App /exec 網址
+  // ============================================================
+
+  const CONTROL_URL =
+    'https://script.google.com/macros/s/AKfycbw472sz_13s3Sk5Y4oexnY2sSOUwjQuL44axG4blYIzkvGJmx_CPoiu2K5TgLmIM1SK/exec';
+
+
+
+  // ============================================================
+  // 網路狀態
+  // ============================================================
 
   function updateNetworkStatus() {
-    const el = document.getElementById('networkStatus');
-    const btn = document.getElementById('launchButton');
+
+    const el =
+      document.getElementById(
+        'networkStatus'
+      );
+
+    const btn =
+      document.getElementById(
+        'launchButton'
+      );
+
+    const systemStatus =
+      document.getElementById(
+        'systemStatus'
+      );
+
 
     if (navigator.onLine) {
-      el.textContent = '● 網路已連線，可以啟動報到系統';
-      el.className = 'status online';
-      btn.disabled = false;
+
+      el.textContent =
+        '● 網路已連線，可以啟動報到系統';
+
+      el.className =
+        'status online';
+
+      btn.disabled =
+        false;
+
+      systemStatus.textContent =
+        '網路正常，等待啟動報到控制頁';
+
     } else {
-      el.textContent = '● 目前離線：請恢復網路後再進行報到';
-      el.className = 'status offline';
-      btn.disabled = true;
+
+      el.textContent =
+        '● 目前離線：請恢復網路後再進行報到';
+
+      el.className =
+        'status offline';
+
+      btn.disabled =
+        true;
+
+      systemStatus.textContent =
+        '目前沒有網路連線';
+
     }
+
   }
+
+
+
+  // ============================================================
+  // 檢查 Apps Script 正式部署網址
+  // ============================================================
+
+  function isValidControlUrl() {
+
+    const url =
+      String(
+        CONTROL_URL || ''
+      ).trim();
+
+
+    const validFormat =
+      /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec(?:\?.*)?$/i
+        .test(url);
+
+
+    const hasPlaceholder =
+      url.includes('請貼上') ||
+      url.includes('部署ID') ||
+      url.includes('YOUR_') ||
+      url.includes('xxxxx');
+
+
+    return (
+      validFormat &&
+      !hasPlaceholder
+    );
+
+  }
+
+
+
+  // ============================================================
+  // 啟動 Apps Script 報到控制頁
+  // ============================================================
 
   function openControlPage() {
+
     if (!navigator.onLine) {
-      alert('目前沒有網路連線，請恢復網路後再啟動報到系統。');
+
+      alert(
+        '目前沒有網路連線，' +
+        '請恢復網路後再啟動報到系統。'
+      );
+
       return;
     }
 
-     function openControlPage() {
-  if (!navigator.onLine) {
-    alert('目前沒有網路連線，請恢復網路後再啟動報到系統。');
-    return;
+
+    if (!isValidControlUrl()) {
+
+      alert(
+        'Apps Script 控制頁網址設定錯誤。\n\n' +
+        '請確認 pwa/index.html 中的 CONTROL_URL ' +
+        '為正式部署的 /exec 網址。'
+      );
+
+      return;
+    }
+
+
+    const systemStatus =
+      document.getElementById(
+        'systemStatus'
+      );
+
+
+    systemStatus.textContent =
+      '正在開啟 Apps Script 報到控制頁…';
+
+
+    try {
+
+      const opened =
+        window.open(
+          CONTROL_URL,
+          '_blank'
+        );
+
+
+      // ----------------------------------------------------------
+      // 某些 iPhone PWA / Safari
+      // 可能阻擋 window.open。
+      // 若被阻擋，直接在目前頁面開啟。
+      // ----------------------------------------------------------
+
+      if (!opened) {
+
+        systemStatus.textContent =
+          '改用目前視窗開啟控制頁…';
+
+        window.location.href =
+          CONTROL_URL;
+
+        return;
+      }
+
+
+      systemStatus.textContent =
+        'Apps Script 報到控制頁已開啟';
+
+
+    } catch (error) {
+
+      console.error(
+        '開啟控制頁失敗：',
+        error
+      );
+
+
+      systemStatus.textContent =
+        '無法開啟控制頁，改用目前視窗開啟…';
+
+
+      window.location.href =
+        CONTROL_URL;
+
+    }
+
   }
 
-  const valid =
-    /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec(?:\?.*)?$/i
-      .test(CONTROL_URL);
 
-  const hasPlaceholder =
-    CONTROL_URL.includes('請貼上') ||
-    CONTROL_URL.includes('部署ID');
 
-  if (!valid || hasPlaceholder) {
-    alert(
-      'Apps Script 控制頁網址尚未正確設定。\n\n' +
-      '請在 pwa/index.html 的 CONTROL_URL 貼上正式 /exec 網址。'
+  // ============================================================
+  // 網路狀態監聽
+  // ============================================================
+
+  window.addEventListener(
+    'online',
+    updateNetworkStatus
+  );
+
+
+  window.addEventListener(
+    'offline',
+    updateNetworkStatus
+  );
+
+
+  window.addEventListener(
+    'load',
+    updateNetworkStatus
+  );
+
+
+
+  // ============================================================
+  // Service Worker
+  // ============================================================
+
+  if (
+    'serviceWorker' in navigator
+  ) {
+
+    window.addEventListener(
+      'load',
+      function () {
+
+        navigator.serviceWorker
+          .register(
+            './service-worker.js',
+            {
+              updateViaCache: 'none'
+            }
+          )
+
+          .then(
+            function (registration) {
+
+              console.log(
+                'CEO報到 Service Worker 已註冊：',
+                registration.scope
+              );
+
+
+              // 主動檢查新版
+              registration.update()
+                .catch(function () {});
+
+            }
+          )
+
+          .catch(
+            function (error) {
+
+              console.error(
+                'Service Worker 註冊失敗：',
+                error
+              );
+
+            }
+          );
+
+      }
     );
-    return;
+
   }
 
-  const opened = window.open(CONTROL_URL, '_blank');
-
-  if (!opened) {
-    window.location.href = CONTROL_URL;
-  }
-}
-      alert('尚未設定正確的 Apps Script /exec 網址。請先修改 pwa/index.html 的 CONTROL_URL。');
-      return;
-    }
-
-    const opened = window.open(CONTROL_URL, '_blank');
-    if (!opened) {
-      window.location.href = CONTROL_URL;
-    }
-  }
-
-  window.addEventListener('online', updateNetworkStatus);
-  window.addEventListener('offline', updateNetworkStatus);
-  window.addEventListener('load', updateNetworkStatus);
-
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-      navigator.serviceWorker
-        .register('./service-worker.js', { updateViaCache: 'none' })
-        .catch(function (error) {
-          console.error('Service Worker 註冊失敗：', error);
-        });
-    });
-  }
 </script>
+
 </body>
 </html>
-
