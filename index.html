@@ -664,7 +664,7 @@
  
  
   // ==========================================================
-  // 報到結果：大字名牌＋姓名語音
+  // 報到結果：大字名牌＋姓名＋職稱語音
   // ==========================================================
   function handleCheckinResult(result){
     lastResultForReplay = result || null;
@@ -673,7 +673,7 @@
  
     if (result && result.type === 'success' && result.name && result.badgeNumber) {
       setTimeout(function(){
-        speakCheckinSuccess(result.name, result.badgeNumber);
+        speakCheckinSuccess(result.name, result.title, result.badgeNumber);
       }, 180);
     }
   }
@@ -714,7 +714,7 @@
         '</div>';
  
       if (result.badgeNumber) {
-        html += '<button class="success" onclick="replayLastVoice()">🔊 再播一次姓名＋名牌號碼</button>';
+        html += '<button class="success" onclick="replayLastVoice()">🔊 再播一次姓名＋職稱＋名牌號碼</button>';
       }
     }
  
@@ -727,7 +727,7 @@
  
   function replayLastVoice(){
     if (!lastResultForReplay || !lastResultForReplay.name || !lastResultForReplay.badgeNumber) return;
-    speakCheckinSuccess(lastResultForReplay.name, lastResultForReplay.badgeNumber);
+    speakCheckinSuccess(lastResultForReplay.name, lastResultForReplay.title, lastResultForReplay.badgeNumber);
   }
  
  
@@ -832,13 +832,24 @@
   }
  
  
-  function speakCheckinSuccess(name, badgeNumber){
+  function speakCheckinSuccess(name, title, badgeNumber){
     const safeName = String(name || '').trim();
+    const safeTitle = String(title || '').trim();
     const chineseBadge = badgeNumberToChinese(badgeNumber);
  
-    const text = safeName
-      ? safeName + '您好，報到成功，請領取' + chineseBadge + '號名牌。'
-      : '報到成功，請領取' + chineseBadge + '號名牌。';
+    let greeting = '';
+ 
+    if (safeName && safeTitle) {
+      greeting = safeName + safeTitle + '您好，';
+    } else if (safeName) {
+      greeting = safeName + '您好，';
+    }
+ 
+    const text =
+      greeting +
+      '報到成功，請領取' +
+      chineseBadge +
+      '號名牌。';
  
     speakText(text);
   }
