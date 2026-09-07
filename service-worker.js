@@ -1,14 +1,14 @@
-const CACHE_NAME = 'ceo-checkin-pwa-v4';
+const CACHE_NAME = 'ceo-checkin-pwa-v5';
 
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
   './offline.html',
-  './icons/apple-touch-icon.png',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon-maskable-512.png'
+  './apple-touch-icon.png',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-512.png'
 ];
 
 self.addEventListener('install', function (event) {
@@ -50,51 +50,49 @@ self.addEventListener('fetch', function (event) {
 
   const url = new URL(request.url);
 
-  // Apps Script 與 Google Sheets 不由 PWA Service Worker 攔截。
   if (url.origin !== self.location.origin) {
     return;
   }
 
-  // HTML 導航採 Network First，
-  // 可降低手機一直看到舊版 GOOGLE_SHEET_URL 的情況。
+  // Scanner 必須每次取得 GitHub 最新版，避免誤讀 PWA 首頁或舊掃碼器。
+  if (url.pathname.includes('/ceo-checkin/scanner/')) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' })
+        .catch(function () {
+          return new Response(
+            '掃碼頁目前無法連線，請確認網路後重新啟動。',
+            {
+              status: 503,
+              headers: {
+                'Content-Type': 'text/plain; charset=utf-8'
+              }
+            }
+          );
+        })
+    );
+    return;
+  }
+
+  // PWA HTML 導航：Network First
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(
-        request,
-        {
-          cache: 'no-store'
-        }
-      )
+      fetch(request, { cache: 'no-store' })
         .then(function (response) {
-          if (
-            response &&
-            response.ok
-          ) {
-            const copy =
-              response.clone();
+          if (response && response.ok) {
+            const copy = response.clone();
 
-            caches
-              .open(CACHE_NAME)
+            caches.open(CACHE_NAME)
               .then(function (cache) {
-                cache.put(
-                  request,
-                  copy
-                );
+                cache.put(request, copy);
               });
           }
 
           return response;
         })
         .catch(function () {
-          return caches
-            .match(request)
+          return caches.match(request)
             .then(function (cached) {
-              return (
-                cached ||
-                caches.match(
-                  './offline.html'
-                )
-              );
+              return cached || caches.match('./offline.html');
             });
         })
     );
@@ -102,10 +100,9 @@ self.addEventListener('fetch', function (event) {
     return;
   }
 
-  // 靜態資源採 Cache First。
+  // 靜態資源：Cache First
   event.respondWith(
-    caches
-      .match(request)
+    caches.match(request)
       .then(function (cached) {
         if (cached) {
           return cached;
@@ -113,23 +110,15 @@ self.addEventListener('fetch', function (event) {
 
         return fetch(request)
           .then(function (response) {
-            if (
-              !response ||
-              !response.ok
-            ) {
+            if (!response || !response.ok) {
               return response;
             }
 
-            const copy =
-              response.clone();
+            const copy = response.clone();
 
-            caches
-              .open(CACHE_NAME)
+            caches.open(CACHE_NAME)
               .then(function (cache) {
-                cache.put(
-                  request,
-                  copy
-                );
+                cache.put(request, copy);
               });
 
             return response;
