@@ -265,6 +265,12 @@
     <div class="stat">報到率<strong id="rate">-</strong></div>
   </div>
  
+  <div class="panel">
+    <h2>📊 報名狀況</h2>
+    <p class="hint">點選下方按鈕，可開啟 Google 試算表查看最新報名狀況。</p>
+    <button class="success" onclick="openRegistrationSheet()">📊 開啟報名狀況試算表</button>
+  </div>
+
   <div id="result" class="result"></div>
  
   <div class="panel">
@@ -307,12 +313,34 @@
   const params = new URLSearchParams(window.location.search);
   const CONTROL_ORIGIN = String(params.get('controlOrigin') || '').trim();
   const SESSION_TOKEN = String(params.get('sessionToken') || '').trim();
+
+  // ==========================================================
+  // 報名狀況 Google 試算表
+  // 請將下方網址替換成實際的 Google 試算表分享網址。
+  // 是否能開啟仍依 Google 試算表本身的分享權限設定而定。
+  // ==========================================================
+  const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/請替換成您的試算表ID/edit';
  
   let controlConnected = false;
   let lastPongAt = 0;
   let helloTimer = null;
   let heartbeatTimer = null;
  
+  // ==========================================================
+  // 開啟報名狀況試算表
+  // ==========================================================
+  function openRegistrationSheet(){
+    const url = String(GOOGLE_SHEET_URL || '').trim();
+
+    if (!/^https:\/\/docs\.google\.com\/spreadsheets\//i.test(url) ||
+        url.includes('請替換成您的試算表ID')) {
+      alert('尚未設定報名狀況試算表網址。請先修改 GOOGLE_SHEET_URL。');
+      return;
+    }
+
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
   // ==========================================================
   // Scanner 狀態
   // ==========================================================
