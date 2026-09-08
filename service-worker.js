@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ceo-checkin-pwa-v5';
+const CACHE_NAME = 'ceo-checkin-pwa-v6';
 
 const APP_SHELL = [
   './',
@@ -44,17 +44,14 @@ self.addEventListener('activate', function (event) {
 self.addEventListener('fetch', function (event) {
   const request = event.request;
 
-  if (request.method !== 'GET') {
-    return;
-  }
+  if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
 
-  if (url.origin !== self.location.origin) {
-    return;
-  }
+  // 外部 Apps Script / Google Sheets 不攔截
+  if (url.origin !== self.location.origin) return;
 
-  // Scanner 必須每次取得 GitHub 最新版，避免誤讀 PWA 首頁或舊掃碼器。
+  // Scanner 永遠優先取得最新版
   if (url.pathname.includes('/ceo-checkin/scanner/')) {
     event.respondWith(
       fetch(request, { cache: 'no-store' })
@@ -73,7 +70,7 @@ self.addEventListener('fetch', function (event) {
     return;
   }
 
-  // PWA HTML 導航：Network First
+  // PWA 導航頁：Network First
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request, { cache: 'no-store' })
@@ -100,19 +97,15 @@ self.addEventListener('fetch', function (event) {
     return;
   }
 
-  // 靜態資源：Cache First
+  // 其他靜態檔：Cache First
   event.respondWith(
     caches.match(request)
       .then(function (cached) {
-        if (cached) {
-          return cached;
-        }
+        if (cached) return cached;
 
         return fetch(request)
           .then(function (response) {
-            if (!response || !response.ok) {
-              return response;
-            }
+            if (!response || !response.ok) return response;
 
             const copy = response.clone();
 
